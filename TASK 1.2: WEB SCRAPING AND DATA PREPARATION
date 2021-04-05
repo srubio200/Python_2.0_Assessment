@@ -1,0 +1,70 @@
+#TASK 1.2: WEB SCRAPING AND DATA PREPARATION
+
+from selenium import webdriver
+import time
+import pandas as pd
+
+brand = []
+year = []
+model = []
+stype = []
+mileage = []
+ext_color = []
+int_color = []
+transmission = []
+drivetrain = []
+price = []
+
+for k in range(6):
+    PATH = "C:/Users/srubi/Downloads/chromedriver.exe"
+    browser = webdriver.Chrome(PATH)
+    
+    URL="https://www.cars.com/for-sale/searchresults.action/?page="+
+            str(k+1)+"&perPage=100&rd=10&searchSource=PAGINATION&sort=relevance&zc=76190"
+    browser.get(URL)
+    time.sleep(35)
+    
+    car_prices = browser.find_elements_by_class_name('payment-section')
+    car_stocktype = browser.find_elements_by_class_name('listing-row__stocktype')
+    car_mileage = browser.find_elements_by_class_name('listing-row__mileage')
+    
+    for i in range(0,len(car_prices)):
+        price.append(car_prices[i].text)
+        stype.append(car_stocktype[i].text)
+        mileage.append(car_mileage[i].text)
+        
+    car_title = browser.find_elements_by_class_name('listing-row__title')
+    for i in range(0,len(car_title)):
+        title = []
+        title = car_title[i].text.split(' ')
+        year.append(title[0])
+        brand.append(title[1])
+        model.append(' '.join(title[2:]))
+        
+    car_meta = browser.find_elements_by_class_name('listing-row__meta')
+    for i in range(0,len(car_meta)):
+        meta = []
+        meta = car_meta[i].text.split('\n')
+        for k in range(4):
+            meta[k] = meta[k].split(" ")
+        ext_color.append(meta[0][-1])
+        int_color.append(meta[1][-1])
+        transmission.append(meta[2][-1])
+        drivetrain.append(meta[3][-1])
+        
+for i in range(len(price)):
+    price[i] = price[i].replace("$","",1)
+    price[i] = price[i].replace(",","")
+    price[i] = int(price[i])
+
+for i in range(len(mileage)):
+    mileage[i] = mileage[i].replace(" mi.","",1)
+    mileage[i] = mileage[i].replace(",","")
+    mileage[i] = int(mileage[i])
+
+data = {'brand':brand,'year':year,'model':model,'type':stype,'mileage':mileage,
+        'exterior_color':ext_color,'interior_color':int_color,'transmission':transmission,
+        'drivetrain':drivetrain,'price_USD':price}
+df = pd.DataFrame(data)
+df.to_csv(r'C:\Users\srubi\Documents\Personal\Arden University\1st period\Python course\Data.csv')
+df.head()
