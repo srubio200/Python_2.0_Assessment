@@ -1,0 +1,33 @@
+#TASK 1.3: DATA VISUALIZATION
+
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+import numpy as np
+
+df = pd.read_csv(r'C:\Users\srubi\Documents\Personal\Arden University\1st period\Python course\Data.csv')
+
+df.hist('price_USD')
+
+sns.color_palette("hls", 8)
+sns.relplot(
+    data=df, x="mileage", y="price_USD",
+    hue="year"
+)
+
+sns.relplot(
+    data=df, kind="line",
+    x="year", y="price_USD",
+    col="brand"
+)
+
+sns.catplot(
+    data=df, kind="bar",
+    x="brand", y="price_USD",
+    hue="year", height=5, aspect=4
+)
+
+sns.displot(
+    data=df, kind="hist",
+    x="mileage"
+)
